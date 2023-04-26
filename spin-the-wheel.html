@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spin Wheel App</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <script src="assets/js/chart.js"></script>
+    <!-- Chart JS Plugin for displaying text over chart -->
+    <script src="assets/js/chartjs-plugin-datalabels.min.js"></script>
+  
+
+    <script src="main.js"></script>
+    
+    <div id="wrapper">
+      <div  class="wrapper">
+        <div id="spin-container" class="container">
+          <div id="spin-container" class="spin-container">
+              <canvas id="wheel"></canvas>
+              <button id="spin-btn">Spin</button>
+              <img src="assets/img/leftArrow.png" class="spin-arrow-img" alt="spinner-arrow" />
+          </div>
+         
+        </div>
+        <div id="final-value">
+          <p>Click On The Spin Button To Start</p>
+        </div>
+      </div>
+      
+    </div>
+    <canvas id="confetti" class="display-none" ></canvas>
+
+      <!-- Script -->
+      <script src="assets/js/confetti.js"></script>
+    
+    <!-- Chart JS -->
+    
+  </body>
+</html>

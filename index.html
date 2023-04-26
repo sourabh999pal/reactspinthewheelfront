@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex">
+  <title>Spin Wheel App</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="wrapper wrapperhomeheight">
+    <div id="spin-div">
+      <div id="spinner">
+      </div>
+    </div>
+    <div class="container text-center mb-5">
+      <div>
+        <img src="assets/img/fever fm.webp" class="sppl-logo" alt="sppl-logo">
+        <!-- <img src="assets/img/fever fm logo bg wala.png" class="sppl-logo-fm" alt="sppl-logo"> -->
+      </div>
+      <div>
+        <img src="assets/img/spinwin.webp" class="all-logo spinwin-logo" alt="sppl-logo">
+      </div>
+      <div>
+        <img src="assets/img/logo_2.webp" class="all-logo spinwin-logo" alt="sppl-logo">
+      </div>
+    </div>
+    <div class="container mb-5">
+      <form id="myForm">
+        <div class="mb-3">
+          <label htmlFor="name" class="form-label">Name*</label>
+          <input type="text" class="form-control" required name='name' id="name" placeholder='Name' />
+        </div>
+        <div class="mb-3">
+          <label htmlFor="email" class="form-label">Email address*</label>
+          <input type="email" class="form-control" required name='email' id="email" placeholder='Email' />
+        </div>
+        <div class="mb-3">
+          <label htmlFor="mobile" class="form-label">Phone Number</label>
+          <input type="number" class="form-control" name='mobile' id="mobile" placeholder='Phone Number' />
+        </div>
+        <div class="btn-center">
+          <button class='btn'> SUBMIT </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="another-wrapper">
+
+      <img src="assets/img/logo.png" class="all-logo" alt="sppl-logo">
+      
+    </div>
+
+  </div>
+
+  
+  
+
+  <script src="common.js"></script>
+  <script>
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const mobile = document.getElementById('mobile').value;
+
+    const form = document.getElementById('myForm');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      document.getElementById("spin-div").classList.add("spin-div");
+      document.getElementById("spinner").classList.add("spinner");
+
+
+      const formData = new FormData(e.target);
+      const data = {};
+
+      for (const [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+      console.log(data);
+
+
+
+      const usercheck = async (data) => {
+        await fetch(nodeurl + 'users/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === 200) {
+              console.log("success");
+              window.localStorage.setItem('user data', JSON.stringify(data));
+              spindatali();
+            }
+
+            else if (res.status === 403) {
+              alert(res.message);
+              window.location.reload();
+            }
+          }
+          )
+      }
+      usercheck(data);
+
+      const spindatali = async (url) => {
+        await fetch(nodeurl + 'users/spindatalist', {
+          method: 'GET',
+        }).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === '200') {
+              console.log("success");
+              window.localStorage.setItem('spin data', JSON.stringify(res.message[0]));
+              window.localStorage.setItem('thomsonwinCount', JSON.stringify(res.thomsonwinCount));
+              window.localStorage.setItem('kodakwinCount', JSON.stringify(res.kodakwinCount));
+              window.localStorage.setItem('blauwinCount', JSON.stringify(res.blauwinCount));
+              // window.localStorage.setItem('thomsonwinCount', JSON.stringify(50));
+              window.location.href = "/spin-the-wheel.html";
+            }
+
+            else if (res.status === '400') {
+              alert("somthing went wrong")
+            }
+          }
+          )
+      }
+
+    });
+  </script>
+  <!-- <script src="main.js"></script> -->
+</body>
+
+</html>

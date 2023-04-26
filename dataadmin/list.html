@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex">
+  <title>Spin Wheel App</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <div class="wrapper-bg">
+    <div class="container mb-5">
+      <div class="row">
+        <div id="spindata" class="spindata">
+
+        </div>
+        <div id="spincountwin" class="spincountwin spindata">
+
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="container mb-5">
+      <div class="spinrandomuser">
+        <button class="btn btn-primary" type="button" id="randomWinner">Random Winner</button>
+        <div id="spinrandomuser" class="spinrandomuser">
+
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="container">
+      <div class="row">
+        <form id="updatespindata" class="updatespindata">
+          <div class="mb-3">
+            <label htmlFor="totalSpin" class="form-label">Total Spin</label>
+            <input type="text" class="form-control" required name='totalSpin' id="totalSpin" placeholder='totalSpin' />
+          </div>
+          <div class="mb-3">
+            <label htmlFor="totalWinner" class="form-label">Total Winner</label>
+            <input type="text" class="form-control" required name='totalWinner' id="totalWinner"
+              placeholder='totalWinner' />
+          </div>
+          <button class='btn mb-5'> SUBMIT </button>
+        </form>
+      </div>
+    </div>
+    <hr/>
+    <div class="container text-center mb-5">
+      <h1>Spin User Data</h1>
+    </div>
+    <div class="container mb-5">
+      <div class="spinuserdatadiv">
+        <table id="spinuserdata">
+
+        </table>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <script src="../common.js"></script>
+  <script>
+
+    const totalSpin = document.getElementById('totalSpin').value;
+    const totalWinner = document.getElementById('totalWinner').value;
+
+    const spinrandomuser = document.getElementById("spinrandomuser");
+    const randomWinner = document.getElementById("randomWinner");
+
+    const form = document.getElementById('updatespindata');
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Defining async function
+      const getapi = async (url) => {
+        await fetch(nodeurl + 'users/list', {
+          method: 'GET',
+        }).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === '200') {
+              console.log("success");
+              tabledatashow(res);
+            }
+
+            else if (res.status === '400') {
+              alert("somthing went wrong")
+            }
+          }
+          )
+      }
+
+      const spindatalist = async (url) => {
+        await fetch(nodeurl + 'users/spindatalist', {
+          method: 'GET',
+        }).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === '200') {
+              console.log("success");
+              dataspinList(res);
+
+            }
+
+            else if (res.status === '400') {
+              alert("somthing went wrong")
+            }
+          }
+          )
+      }
+      let tab =
+        `<tr>
+          <th>Name</th>
+          <th>email </th>
+                <th>mobile </th>
+                <th>prize </th>
+                <th>resultPrizeVal</th>
+         </tr>`;
+
+      const tabledatashow = (res) => {
+
+        for (let i of res.message) {
+          tab += `<tr>
+                <td>${i.name} </td>
+                <td>${i.email} </td>
+                <td>${i.mobile} </td>
+                <td>${i.prize} </td>
+                <td>${i.resultPrizeVal}</td>
+            </tr>`
+        };
+        addition(res);
+        document.getElementById("spinuserdata").innerHTML = tab;
+      }
+
+      const addition = (res) => {
+        const data = res.message;
+        const dataLength = data.length;
+        let totalwinnerCount = 0;
+        for (let i = 0; i < dataLength; i++) {
+          totalwinnerCount = totalwinnerCount + data[i].resultPrizeVal
+        }
+        let spincountwintab = `<ul>
+        <li>Total Count Winner : <span>${totalwinnerCount}</span></li>
+      </ul>`;
+        document.getElementById("spincountwin").innerHTML = spincountwintab;
+
+      }
+
+      const dataspinList = (res) => {
+        const data = res.message[0];
+        let dataspinListtab = `<ul>
+        <li>Total Spin (per day) : <span>${data.totalSpin}</span></li>
+        <li>Total Winner (per day) : <span>${data.totalWinner}</span></li>
+      </ul>`;
+        document.getElementById("spindata").innerHTML = dataspinListtab;
+      }
+
+
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = {};
+
+        for (const [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+        console.log(data);
+        submitSpindata(data);
+
+
+      });
+
+      const submitSpindata = async (data) => {
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }
+
+        await fetch(nodeurl + 'users/spindata', requestOptions).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === '200') {
+              console.log("success");
+              // window.localStorage.setItem('admin data', JSON.stringify(data));
+              // window.location.href = "/dataadmin/list.html"
+            }
+
+            else if (res.status === '400') {
+              alert("somthing went wrong")
+            }
+          }
+          )
+      }
+
+
+      randomWinner.addEventListener('click', function () {
+        fetch(nodeurl + 'users/spinrandomwin', {
+          method: 'GET',
+        }).then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+
+            if (res.status === '200') {
+              console.log("success");
+              generateRandomWin(res.message);
+            }
+
+            else if (res.status === '400') {
+              alert("somthing went wrong")
+            }
+          }
+          )
+      });
+
+      function generateRandomWin(res) {
+        const randomNum = Math.floor(Math.random() * res.length);
+        const randomNumData = res[randomNum]
+        spinrandomuser.innerHTML = `<ul><li>${randomNumData.name}</li><li>${randomNumData.email}</li><li>${randomNumData.mobile
+}</li></ul>`
+        
+      }
+
+      getapi(nodeurl);
+      spindatalist(nodeurl);
+
+
+    })
+
+  </script>
+  <!-- <script src="main.js"></script> -->
+</body>
+
+</html>
